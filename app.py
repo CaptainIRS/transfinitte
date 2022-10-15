@@ -63,7 +63,7 @@ async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, g
         district = ''
     if ac is None:
         ac = ''
-    cookies = json.loads(cookies)
+    cookies = cookies.__dict__
     location = f'{state},{district},{ac}'
     r = requests.post('https://electoralsearch.in/Home/searchVoter', data={
         'dob': dob,
@@ -78,7 +78,8 @@ async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, g
         'search_type': 'details',
         'txtCaptcha': captcha,
     }, cookies=cookies)
-    results = r.json()['docs']
+    print(r.text)
+    results = r.json()['response']['docs']
     if len(results) == 1:
         result = results[0]
         url = get_url(result['st_code'], result['dist_no'],

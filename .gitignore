@@ -2,3 +2,5 @@ output.csv
 venv
 **/__pycache__
 docker
+*.log
+.vscode
