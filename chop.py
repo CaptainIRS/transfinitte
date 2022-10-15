@@ -9,9 +9,9 @@ import pytesseract as ts
 # import os
 # import urllib.request
 # import json
-# import logging
-# logging.basicConfig(filename='main.log', format='%(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG)
-# logging.getLogger().addHandler(logging.StreamHandler())
+import logging
+logging.basicConfig(filename='main.log', format='%(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG)
+logging.getLogger().addHandler(logging.StreamHandler())
 
 def chop_image(image, page_no):
     '''
@@ -73,13 +73,13 @@ def chop_image(image, page_no):
                 #     'deleted/{}_{}_{}.png'.format(page_no, image_number, column))
                 deleted_text = ts.image_to_string(deleted, config="-c tessedit_char_whitelist=delt --psm 1")
                 if 'deleted' in deleted_text.lower():
-                    # logging.info(f'Deleted {image_number} {column}')
+                    logging.info(f'Deleted {image_number} {column}')
                     continue
 
                 text = ts.image_to_string(cut, lang='tam+eng')
                 # epic_text = ts.image_to_string(epic, lang='eng', config="-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ -c tosp_min_sane_kn_sp=0 --psm 8")
                 tuples.append((page_no, image_number, column, text))
-    # logging.info(f'Done page {page_no}')
+    logging.info(f'Done page {page_no}')
     return tuples
 
 

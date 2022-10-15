@@ -15,6 +15,7 @@ def get_family_tree(target, people):
     relations['grandmother'] = []
     relations['grandson'] = []
     relations['granddaughter'] = []
+    house_no = None
     for person in people:
         if similar(target['name'], person['name']) and target['age'] == person['age'] and similar(target['rln_name'], person['relation_name']):
             house_no = person['house_number']

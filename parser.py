@@ -46,7 +46,9 @@ def get_gender(gender: str, language: str = 'english') -> str:
 def extract_name(lines: List[str], language='english'):
     if not lines:
         return '---', []
+    print(lines[0])
     name = lines[0].split(':')
+    print(name)
     slice_index = 1
     if len(name) != 2:
         name = '---'
@@ -59,7 +61,8 @@ def extract_name(lines: List[str], language='english'):
         slice_index = 2
 
     name = translate_to_eng(name, language)
-    name = re.sub(r'[-]+', '', name).strip()
+    print(name)
+    name = re.sub('[-]+', '', name).strip()
     return name, lines[slice_index:]
 
 

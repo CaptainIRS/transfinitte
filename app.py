@@ -10,6 +10,7 @@ from models import Cookies
 from pdf2image import convert_from_bytes
 from chop import chop_image
 from parser import parse_text
+from multiprocessing import Pool, cpu_count
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=[
@@ -58,13 +59,22 @@ async def captcha():
 
 
 @app.post('/tree')
-async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, gender=None, district=None, ac=None):
+async def get_tree(name, relative_name, dob, state, gender=None, district=None, ac=None):
     if district is None:
         district = ''
     if ac is None:
         ac = ''
-    cookies = cookies.__dict__
+    cookies = {
+        "cookiesession1": "678B2867C4B5B295E9638138BA689FDA",
+        "electoralSearchId": "2ty5kzfwrzcehfj0zxanklmr",
+        "Electoral": "456c656374726f6c7365617263682d73657276657231"
+    }
+    if district == 'null':
+        district = ''
+    if ac == 'null':
+        ac = ''
     location = f'{state},{district},{ac}'
+
     r = requests.post('https://electoralsearch.in/Home/searchVoter', data={
         'dob': dob,
         'gender': gender,  # M/F/O
@@ -76,23 +86,27 @@ async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, g
         'reureureired': 'ca3ac2c8-4676-48eb-9129-4cdce3adf6ea',
         'rln_name': relative_name,
         'search_type': 'details',
-        'txtCaptcha': captcha,
+        'txtCaptcha': 'nFaawA',
     }, cookies=cookies)
     print(r.text)
-    results = r.json()['response']['docs']
+    try:
+        results = r.json()['response']['docs']
+    except Exception as e:
+        print(e)
+        return {'error': 'Invalid captcha'}
     if len(results) == 1:
         target = results[0]
         url = get_url(target['st_code'], target['dist_no'],
                       target['ac_no'], target['part_no'])
         dicts = []
-        pdf = requests.get(url).content
-        pages = convert_from_bytes(pdf)
-        for i in range(len(pages)):
-            tuples = chop_image(pages[i], i)
-            for tup in tuples:
-                dic = parse_text(tup[3], "Tamil")
-                dicts.append(dic)
 
+        pdf = requests.get(url).content
+        pages = convert_from_bytes(pdf, 500)
+        with Pool(cpu_count//2) as p:
+            texts = p.starmap([(pages[i], i + 1) for i in range(2, len(pages) - 1)])
+        for (page_no, image_no, col, text) in texts:
+            dic = parse_text(text)
+            dicts.append(dic)
         return get_family_tree(target, dicts)
 
     elif len(results) == 0:
