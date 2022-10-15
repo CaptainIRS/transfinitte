@@ -72,11 +72,13 @@ def chop_image(image, page_no):
                 # deleted.save(
                 #     'deleted/{}_{}_{}.png'.format(page_no, image_number, column))
                 deleted_text = ts.image_to_string(deleted, config="-c tessedit_char_whitelist=delt --psm 1")
-                if 'deleted' in deleted_text.lower():
+                # deleted_text = easyocr.Reader(['en'], gpu=False).readtext(np.asarray(deleted), detail=0, paragraph=False)
+                if 'deleted' in ''.join(deleted_text).lower():
                     logging.info(f'Deleted {image_number} {column}')
                     continue
 
                 text = ts.image_to_string(cut, lang='tam+eng')
+                # text = ''.join(easyocr.Reader(['ta', 'en'], gpu=False).readtext(np.asarray(cut), detail=0, paragraph=False))
                 # epic_text = ts.image_to_string(epic, lang='eng', config="-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ -c tosp_min_sane_kn_sp=0 --psm 8")
                 tuples.append((page_no, image_number, column, text))
     logging.info(f'Done page {page_no}')

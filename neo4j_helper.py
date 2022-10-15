@@ -29,8 +29,7 @@ class Database:
                 "MERGE (a)-[r:" + relationship_type + "]->(b)", person1=person1, person2=person2, house_number=house_number)
 
 
-# if __name__ == "__main__":
-#     connection = Database("bolt://localhost:7687", "neo4j", "password")
+connection = Database("bolt://localhost:7687", "neo4j", "password")
 #     connection.define_relationship(
 #         {
 #             'person1':  'John',
