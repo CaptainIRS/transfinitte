@@ -13,7 +13,7 @@ import logging
 logging.basicConfig(filename='main.log', format='%(asctime)s %(levelname)-8s %(message)s', level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler())
 
-def chop_image(image, page_no):
+def chop_image(image, page_no, lng='eng'):
     '''
     Chop image into rows and columns
     '''
@@ -76,7 +76,7 @@ def chop_image(image, page_no):
                     logging.info(f'Deleted {image_number} {column}')
                     continue
 
-                text = ts.image_to_string(cut, lang='tam+eng')
+                text = ts.image_to_string(cut, lang='eng'+ f'+{lng}' if lng not in ['eng', ''] else lng)
                 # epic_text = ts.image_to_string(epic, lang='eng', config="-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ -c tosp_min_sane_kn_sp=0 --psm 8")
                 tuples.append((page_no, image_number, column, text))
     logging.info(f'Done page {page_no}')

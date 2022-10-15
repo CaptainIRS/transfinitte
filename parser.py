@@ -11,11 +11,28 @@ def translate_to_eng(string: str, language: str):
         return string
     if language == 'tamil':
         return Transliterator(source='tam', target='eng', build_lookup=True).transform(string)
+    if language == 'hindi':
+        return Transliterator(source='hin', target='eng', build_lookup=True).transform(string)
+    if language == 'punjabi':
+        return Transliterator(source='pan', target='eng', build_lookup=True).transform(string)
+    if language == 'kannada':
+        return Transliterator(source='kan', target='eng', build_lookup=True).transform(string)
+    if language == 'oriya':
+        return Transliterator(source='ori', target='eng', build_lookup=True).transform(string)
 
 
 def get_relationship_type(relation: str, language: str = 'english') -> str:
     if language == 'english':
-        return relation.lower()
+        if 'father' in relation.lower():
+            return 'father'
+        elif 'mother' in relation.lower():
+            return 'mother'
+        elif 'wife' in relation.lower():
+            return 'wife'
+        elif 'husband' in relation.lower():
+            return 'husband'
+        else:
+            return 'other'
     elif language == 'tamil':
         if 'தந்தை' in relation:
             return 'father'
@@ -24,6 +41,50 @@ def get_relationship_type(relation: str, language: str = 'english') -> str:
         elif 'கணவர்' in relation:
             return 'husband'
         elif 'மனைவி' in relation:
+            return 'wife'
+        else:
+            return 'other'
+    elif language == 'hindi':
+        if 'पिता' in relation:
+            return 'father'
+        elif 'माता' in relation:
+            return 'mother'
+        elif 'पति' in relation:
+            return 'husband'
+        elif 'पत्नी' in relation:
+            return 'wife'
+        else:
+            return 'other'
+    elif language == 'punjabi':
+        if 'ਪਿਤਾ' in relation:
+            return 'father'
+        elif 'ਮਾਤਾ' in relation:
+            return 'mother'
+        elif 'ਪਤੀ' in relation:
+            return 'husband'
+        elif 'ਪਤਨੀ' in relation:
+            return 'wife'
+        else:
+            return 'other'
+    elif language == 'kannada':
+        if 'ತಂದೆ' in relation:
+            return 'father'
+        elif 'ತಾಯಿ' in relation:
+            return 'mother'
+        elif 'ಸ್ವತಂತ್ರರೂಪ' in relation:
+            return 'husband'
+        elif 'ಸ್ವತಂತ್ರರೂಪಿನ' in relation:
+            return 'wife'
+        else:
+            return 'other'
+    elif language == 'oriya':
+        if 'ପିତା' in relation:
+            return 'father'
+        elif 'ମାତା' in relation:
+            return 'mother'
+        elif 'ପତି' in relation:
+            return 'husband'
+        elif 'ପତିନି' in relation:
             return 'wife'
         else:
             return 'other'
@@ -40,15 +101,43 @@ def get_gender(gender: str, language: str = 'english') -> str:
             return 'female'
         else:
             return 'other'
+    elif language == 'hindi':
+        if 'पुरुष' in gender:
+            return 'male'
+        elif 'महिला' in gender:
+            return 'female'
+        else:
+            return 'other'
+    elif language == 'punjabi':
+        if 'ਪੁਰੁ਷' in gender:
+            return 'male'
+        elif 'ਸਤ੍ਰੀ' in gender:
+            return 'female'
+        else:
+            return 'other'
+
+    elif language == 'kannada':
+        if 'ಪುರುಷ' in gender:
+            return 'male'
+        elif 'ಸ್ತ್ರೀ' in gender:
+            return 'female'
+        else:
+            return 'other'
+
+    elif language == 'oriya':
+        if 'ପୁରୁଷ' in gender:
+            return 'male'
+        elif 'ସ୍ତ୍ରୀ' in gender:
+            return 'female'
+        else:
+            return 'other'
     return 'other'
 
 
 def extract_name(lines: List[str], language='english'):
     if not lines:
         return '---', []
-    print(lines[0])
     name = lines[0].split(':')
-    print(name)
     slice_index = 1
     if len(name) != 2:
         name = '---'
