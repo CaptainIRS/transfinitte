@@ -4,8 +4,12 @@ import json
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from family_tree import get_family_tree
 
 from models import Cookies
+from pdf2image import convert_from_bytes
+from chop import chop_image
+from parser import parse_text
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=[
@@ -80,6 +84,17 @@ async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, g
         url = get_url(result['st_code'], result['dist_no'],
                       result['ac_no'], result['part_no'])
         # TODO: get pdf and extract dict, neo4j
+        dicts = []
+        pdf = requests.get(url).content
+        pages = convert_from_bytes(pdf)
+        for i in range(len(pages)):
+            tuples = chop_image(pages[i], i)
+            for tup in tuples:
+                dic = parse_text(tup[3], "Tamil")
+                dicts.append(dic)
+
+        return get_family_tree(dicts)
+                
     elif len(results) == 0:
         return {'error': 'No results'}
     else:
