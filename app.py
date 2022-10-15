@@ -5,6 +5,8 @@ import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from models import Cookies
+
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=[
                    'http://localhost:3000'], allow_methods=['*'], allow_headers=['*'])
@@ -51,8 +53,8 @@ async def captcha():
     return {'image': image, 'cookies': session.cookies.get_dict()}
 
 
-@app.get('/tree')
-async def get_tree(name, relative_name, dob, captcha, state, cookies, gender=None, district=None, ac=None):
+@app.post('/tree')
+async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, gender=None, district=None, ac=None):
     if district is None:
         district = ''
     if ac is None:
