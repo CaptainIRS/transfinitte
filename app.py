@@ -4,7 +4,7 @@ import base64
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from family_tree import get_family_tree
+from family_tree_v2 import get_family_tree
 
 from pdf2image import convert_from_bytes
 from chop import chop_image
