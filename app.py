@@ -17,6 +17,27 @@ async def root():
     return {'message': 'Hello World'}
 
 
+@app.get('/state_list')
+async def get_state_list():
+    url = 'https://electoralsearch.in/home/getstatelist'
+    response = requests.get(url)
+    return response.json()
+
+
+@app.get('/district_list')
+async def get_district_list(state_no):
+    url = f'https://electoralsearch.in/home/getdistlist?st_code={state_no}'
+    response = requests.get(url)
+    return response.json()
+
+
+@app.get('/assembly_list')
+async def get_assembly_list(state_no, dist_no):
+    url = f'https://electoralsearch.in/home/getaclist?st_code={state_no}&dist_no={dist_no}'
+    response = requests.get(url)
+    return response.json()
+
+
 @app.get('/captcha')
 async def captcha():
     session = requests.Session()
