@@ -81,10 +81,9 @@ async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, g
     print(r.text)
     results = r.json()['response']['docs']
     if len(results) == 1:
-        result = results[0]
-        url = get_url(result['st_code'], result['dist_no'],
-                      result['ac_no'], result['part_no'])
-        # TODO: get pdf and extract dict, neo4j
+        target = results[0]
+        url = get_url(target['st_code'], target['dist_no'],
+                      target['ac_no'], target['part_no'])
         dicts = []
         pdf = requests.get(url).content
         pages = convert_from_bytes(pdf)
@@ -94,8 +93,8 @@ async def get_tree(name, relative_name, dob, captcha, state, cookies: Cookies, g
                 dic = parse_text(tup[3], "Tamil")
                 dicts.append(dic)
 
-        return get_family_tree(dicts)
-                
+        return get_family_tree(target, dicts)
+
     elif len(results) == 0:
         return {'error': 'No results'}
     else:

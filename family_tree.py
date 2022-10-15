@@ -1,5 +1,3 @@
-import json
-
 from fuzzywuzzy import fuzz
 
 
@@ -17,10 +15,12 @@ def get_family_tree(target, people):
     relations['grandmother'] = []
     relations['grandson'] = []
     relations['granddaughter'] = []
-    house_no = target['house_number']
-    relationship_type = target['relationship_type']
-    relation_name = target['relation_name']
-    relations[relationship_type] = relation_name
+    for person in people:
+        if similar(target['name'], person['name']) and target['age'] == person['age'] and similar(target['rln_name'], person['relation_name']):
+            house_no = person['house_number']
+            relationship_type = person['relationship_type']
+            relation_name = person['relation_name']
+            relations[relationship_type] = relation_name
 
     people = [person for person in people if person['house_number'] == house_no]
     relative = None
@@ -66,16 +66,3 @@ def get_family_tree(target, people):
         if person['name'] not in relations.values():
             print(person['name'])
     return relations
-
-
-with open('family.json', 'r') as f:
-    people = json.load(f)
-    target = {
-        "name": "gurusami",
-        "relation_name": "chidamparam",
-        "relationship_type": "father",
-        "house_number": "1-1",
-        "age": "53",
-        "gender": "male"
-    }
-    print(get_family_tree(target, people))

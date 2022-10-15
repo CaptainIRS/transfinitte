@@ -59,7 +59,7 @@ def extract_name(lines: List[str], language='english'):
         slice_index = 2
 
     name = translate_to_eng(name, language)
-    name = re.sub('[-]+', '', name).strip()
+    name = re.sub(r'[-]+', '', name).strip()
     return name, lines[slice_index:]
 
 
