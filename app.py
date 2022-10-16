@@ -174,8 +174,8 @@ async def get_tree(name, relative_name, dob, state, gender=None, district=None, 
     if ac is None:
         ac = ''
     cookies = {
-        "cookiesession1": "678B286792A9097052231EA8BE144CC0",
-        "electoralSearchId": "btjqzcqzp4zmm2aisgfspgyi",
+        "cookiesession1": "678B2867C271ABF7E3BF5A5EBB77FA06",
+        "electoralSearchId": "xuemrl0gfc505zaq3k004w2j",
         "Electoral": "456c656374726f6c7365617263682d73657276657234"
     }
     if district == 'null':
@@ -185,7 +185,7 @@ async def get_tree(name, relative_name, dob, state, gender=None, district=None, 
     location = f'{state},{district},{ac}'
 
     r = requests.post('https://electoralsearch.in/Home/searchVoter', data={
-        'dob': dob,
+        'age': dob,
         'gender': gender,  # M/F/O
         'location': location,
         'location_range': 20,
@@ -195,15 +195,24 @@ async def get_tree(name, relative_name, dob, state, gender=None, district=None, 
         'reureureired': 'ca3ac2c8-4676-48eb-9129-4cdce3adf6ea',
         'rln_name': relative_name,
         'search_type': 'details',
-        'txtCaptcha': 'UjcsyO',
+        'txtCaptcha': 'Eq7Wmg',
     }, cookies=cookies)
     try:
         results = r.json()['response']['docs']
     except Exception as e:
         print(e)
         return {'error': 'Invalid captcha'}
+    target = None
     if len(results) == 1:
         target = results[0]
+        state = target['st_code']
+        district = target['dist_no']
+        ac = target['ac_no']
+        part_no = target['part_no']
+        if os.path.exists(f'dumps/{state}_{district}_{ac}_{part_no}.json'):
+            with open(f'dumps/{state}_{district}_{ac}_{part_no}.json', 'r') as f:
+                return get_family_tree(target,json.load(f))
+        
         url = get_url(target['st_code'], int(target['dist_no']),
                       int(target['ac_no']), int(target['part_no']))
         dicts = []
@@ -215,6 +224,9 @@ async def get_tree(name, relative_name, dob, state, gender=None, district=None, 
         for tuples in texts:
             for text in tuples:
                 dicts.append(parse_text(text[3], get_language(state)[1]))
+
+        with open(f'dumps/{target["st_code"]}_{int(target["dist_no"])}_{int(target["ac_no"])}_{int(target["part_no"])}.json', 'w') as f:
+            json.dump(dicts, f)
 
         return get_family_tree(target, dicts)
 
@@ -228,7 +240,7 @@ async def get_tree(state,  district, ac, part_no):
     try:
         if os.path.exists(f'dumps/{state}_{district}_{ac}_{part_no}.json'):
             with open(f'dumps/{state}_{district}_{ac}_{part_no}.json', 'r') as f:
-                return json.load(f)
+                return get_family_trees(json.load(f))
         
         url = get_url(state, int(district), int(ac), int(part_no))
                         
