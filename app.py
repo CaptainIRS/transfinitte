@@ -4,12 +4,13 @@ import base64
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from family_tree_v2 import get_family_tree
+from family_tree_v2 import get_family_tree, get_family_trees
 
 from pdf2image import convert_from_bytes
 from chop import chop_image
 from parser import parse_text
 from multiprocessing import Pool, cpu_count
+import os
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=[
@@ -215,11 +216,38 @@ async def get_tree(name, relative_name, dob, state, gender=None, district=None, 
             for text in tuples:
                 dicts.append(parse_text(text[3], get_language(state)[1]))
 
-        with open('data.json', 'w') as f:
-            json.dump(dicts, f, indent=4)
         return get_family_tree(target, dicts)
 
     elif len(results) == 0:
         return {'error': 'No results'}
     else:
         return {'error': 'Multiple results'}
+
+@app.post('/trees')
+async def get_tree(state,  district, ac, part_no):
+    try:
+        if os.path.exists(f'dumps/{state}_{district}_{ac}_{part_no}.json'):
+            with open(f'dumps/{state}_{district}_{ac}_{part_no}.json', 'r') as f:
+                return json.load(f)
+        
+        url = get_url(state, int(district), int(ac), int(part_no))
+                        
+        dicts = []
+
+        pdf = requests.get(url, verify=False).content
+        pages = convert_from_bytes(pdf, 500)
+        with Pool(cpu_count()//2) as p:
+            texts = p.starmap(chop_image,[(pages[i], i + 1, get_language(state)[0]) for i in range(2, len(pages) - 1)])
+        for tuples in texts:
+            for text in tuples:
+                dicts.append(parse_text(text[3], get_language(state)[1]))
+
+        with open(f'dumps/{state}_{district}_{ac}_{part_no}.json', 'w') as f:
+            json.dump(dicts, f)
+
+        return get_family_trees(dicts)
+    
+    except Exception as e:
+        print(e)
+        return {'error': 'Invalid'}
+

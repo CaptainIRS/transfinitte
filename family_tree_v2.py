@@ -66,6 +66,22 @@ def dump_visualization():
         json.dump({'nodes': ds_nodes, 'edges': ds_edges}, open('family_tree.json', 'w'))
 
 def get_family_tree(target, people: list[Person]) -> Node:
+    people = [Person(person['name'], person['relationship_type'], person['relation_name'], person['house_number'], person['age'], person['gender']) for person in people]
     graph = build_graph(people)
     return graph[f'{target["name"]}-{target["house_number"]}-{target["age"]}']
 
+def get_family_tree_json(target, people: list[Person]) -> str:
+    return json.dumps(get_family_tree(target, people), default=lambda o: o.__dict__)
+
+def get_family_trees(people: list[Person]) -> list[Node]:
+    people = [Person(person['name'], person['relationship_type'], person['relation_name'], person['house_number'], person['age'], person['gender']) for person in people]
+    nodes = build_graph(people)
+    ds_nodes = [{'id': node.id, 'label': f'{node.name}\nHouse no.: {node.house_number}'} for node in nodes.values() if node.ancestor or node.spouse or node.children]
+    ds_edges = []
+    for node in nodes:
+        if nodes[node].spouse and nodes[node].gender == 'male':
+            name = nodes[node].spouse_name or nodes[node].spouse.spouse_name or 'None'
+            ds_edges.append({'from': nodes[node].id, 'to': nodes[node].spouse.id, 'label': f'spouse ({name})'})
+        for child, name in nodes[node].children:
+            ds_edges.append({'from': nodes[node].id, 'to': child.id, 'label': f'child ({name})', 'arrows': 'to'})
+    return {'nodes': ds_nodes, 'edges': ds_edges}
