@@ -1,0 +1,88 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
+    "@mantine/core": "^5.1.1",
+    "@mantine/dates": "^5.5.5",
+    "@mantine/hooks": "^5.5.5",
+    "@mantine/notifications": "^5.1.1",
+    "@tabler/icons": "^1.79.0",
+    "axios": "^0.27.2",
+    "dayjs": "^1.11.5",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "vis-react": "^0.5.1",
+    "web-vitals": "^2.1.0",
+    "workbox-core": "^6.5.4",
+    "workbox-expiration": "^6.5.4",
+    "workbox-precaching": "^6.5.4",
+    "workbox-routing": "^6.5.4",
+    "workbox-strategies": "^6.5.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint '**/*.{js,jsx}'",
+    "lint:fix": "eslint '**/*.{js,jsx}' --fix",
+    "stylelint": "stylelint '**/*.css'",
+    "stylelint:fix": "stylelint '**/*.css' --fix",
+    "prettier": "prettier '**/*.{json,md,html,yaml}' --list-different",
+    "prettier:fix": "prettier '**/*.{json,md,html,yaml}'  --write",
+    "format": "npm run lint:fix && npm run stylelint:fix && npm run prettier:fix",
+    "format:error": "npm run lint && npm run stylelint && npm run prettier"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint"
+    ],
+    "*.{json,md,html,yaml}": [
+      "prettier --list-different"
+    ],
+    "*.css": [
+      "stylelint"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "stylelint": "^14.9.1",
+    "stylelint-config-standard": "^26.0.0"
+  }
+}
