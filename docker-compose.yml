@@ -1,7 +1,27 @@
-version: '3'
+version: "3.8"
 
 services:
-  bharathx_neo4j:
+  client:
+    container_name: transfinitte-client
+    image: transfinitte-client
+    build: ./client
+    ports:
+      - "3000:80"
+
+  server:
+    container_name: transfinitte-server
+    image: transfinitte-server
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./volumes/cuts:/app/cuts
+      - ./volumes/deleted:/app/deleted
+      - ./volumes/dumps:/app/dumps
+      - ./volumes/epics:/app/epics
+      - ./volumes/rolls:/app/rolls
+
+  neo4j:
     image: neo4j:3.5
     container_name: crawler_neo4j
     restart: unless-stopped

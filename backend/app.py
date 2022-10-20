@@ -4,13 +4,15 @@ import base64
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from family_tree_v2 import get_family_tree, get_family_trees
+from helpers.family_tree_v2 import get_family_tree, get_family_trees
 
 from pdf2image import convert_from_bytes
-from chop import chop_image
-from parser import parse_text
+from helpers.chop import chop_image
+from helpers.parser import parse_text
 from multiprocessing import Pool, cpu_count
 import os
+
+from helpers.true_captcha import solve_captcha
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=[
@@ -173,34 +175,40 @@ async def get_tree(name, relative_name, dob, state, gender=None, district=None, 
         district = ''
     if ac is None:
         ac = ''
-    cookies = {
-        "cookiesession1": "678B2867C271ABF7E3BF5A5EBB77FA06",
-        "electoralSearchId": "xuemrl0gfc505zaq3k004w2j",
-        "Electoral": "456c656374726f6c7365617263682d73657276657234"
-    }
+    
     if district == 'null':
         district = ''
     if ac == 'null':
         ac = ''
     location = f'{state},{district},{ac}'
+    r = None
+    for i in range(5):
+        (captcha_text, cookies) = await solve_captcha()
 
-    r = requests.post('https://electoralsearch.in/Home/searchVoter', data={
-        'age': dob,
-        'gender': gender,  # M/F/O
-        'location': location,
-        'location_range': 20,
-        'name': name,
-        'page_no': '1',
-        'results_per_page': '10',
-        'reureureired': 'ca3ac2c8-4676-48eb-9129-4cdce3adf6ea',
-        'rln_name': relative_name,
-        'search_type': 'details',
-        'txtCaptcha': 'Eq7Wmg',
-    }, cookies=cookies)
+        print(captcha_text, cookies)
+        r = requests.post('https://electoralsearch.in/Home/searchVoter', data={
+            'age': dob,
+            'gender': gender,  # M/F/O
+            'location': location,
+            'location_range': 20,
+            'name': name,
+            'page_no': '1',
+            'results_per_page': '10',
+            'reureureired': 'ca3ac2c8-4676-48eb-9129-4cdce3adf6ea',
+            'rln_name': relative_name,
+            'search_type': 'details',
+            'txtCaptcha': captcha_text
+        }, cookies=cookies)
+        if r.text == 'Wrong Captcha':
+            print('Wrong Captcha')
+            continue
+        else:
+            break
     try:
         results = r.json()['response']['docs']
     except Exception as e:
         print(e)
+        print(r.text)
         return {'error': 'Invalid captcha'}
     target = None
     if len(results) == 1:
