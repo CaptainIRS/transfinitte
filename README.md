@@ -84,3 +84,19 @@ The web application is hosted [here](https://family-tree.captainirs.dev).
 * Run `build.sh` to build the docker images
 
 Run `docker-compose up -d` in the root directory to start the application.
+
+## Screenshots
+
+#### Family tree search for a single person
+
+![single_person](./screenshots/single_person.png)
+![family_tree](./screenshots/family_tree.png)
+
+#### Family tree search for a polling booth
+
+![polling_booth](./screenshots/polling_booth.png)
+![family_trees](./screenshots/family_trees.png)
+
+#### neo4j
+
+![neo4j](./screenshots/neo4j.png)
