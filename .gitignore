@@ -7,3 +7,4 @@ docker
 family_tree.json
 data.json
 volumes/
+backend/.env

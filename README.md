@@ -26,3 +26,56 @@ We have developed an approach to dynamically generate the family tree:
 ## Deployment
 
 The web application is hosted [here](https://family-tree.captainirs.dev).
+
+## API Information
+
+[Postman collection link](https://documenter.getpostman.com/view/5489887/2s847BUbet)
+
+* GET /state_list - Returns a list of states and its state codes
+
+* GET /district_list - Returns a list of districts for a state and its district number
+
+  Query Parameters:
+  * state_no - State code for which the districts are to be fetched
+
+* GET /assembly_list - Returns a list of of assembly constituencies for a district and its assembly number
+  
+  Query Parameters:
+  * state_no - State code for which the districts are to be fetched
+  * dist_no - District number for which the assembly constituencies are to be fetched
+
+* POST /tree - Returns a family tree for a person
+  
+  Query Parameters:
+  * name - Name of the person
+  * relative_name - Name of the relative
+  * dob - Date of birth of the person in YYYY-MM-DD
+  * state - State code of the state in which the person resides
+  * gender (Optional param) - Gender of the person: M - Male, F - Female, O - Other
+  * district (Optional param) - District number of the district in which the person resides
+  * ac (Optional param) - Assembly constituency number of the constituency in which the person resides
+
+* POST /trees - Returns all family trees for a polling booth
+
+  Query Parameters:
+  * state - State code of the state in which the constituency resides
+  * district - District number of the district in which the constituency resides
+  * ac - Assembly constituency number of the constituency
+  * part_no - Part number of the polling booth
+
+## Local Docker deployment instructions
+
+### Backend
+
+* Go to `backend` directory
+* Copy the `.env.example` file to `.env` and fill in the required values
+* Run `git submodule update --init --recursive`
+* Go to `./indic-trans`
+* Run `pip install -r requirements.txt`. It is required for the below command.
+* Run `python setup.py sdist`
+
+### Frontend
+
+* Change BACKEND_URL const to your backend URL in `frontend/src/config.js`
+
+Run `docker-compose up -d` in the root directory to start the application.
