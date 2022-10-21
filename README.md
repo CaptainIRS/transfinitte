@@ -78,4 +78,9 @@ The web application is hosted [here](https://family-tree.captainirs.dev).
 
 * Change BACKEND_URL const to your backend URL in `frontend/src/config.js`
 
+### Spark
+
+* Go to `spark` directory
+* Run `build.sh` to build the docker images
+
 Run `docker-compose up -d` in the root directory to start the application.
