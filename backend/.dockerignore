@@ -1,1 +1,3 @@
 venv/
+indic-trans/
+!indic-trans/dist/indictrans-1.2.3.tar

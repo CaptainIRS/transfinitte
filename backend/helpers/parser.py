@@ -3,17 +3,22 @@ import csv
 import logging
 from indictrans import Transliterator
 import re
-from googletrans import Translator
 csv_file_path = 'output.csv'
 
 
 def translate_to_eng(string: str, language: str):
     if language == 'english':
         return string
-    else :
-        translator = Translator()
-        return translator.translate(string, dest='en').text
-
+    if language == 'tamil':
+        return Transliterator(source='tam', target='eng', build_lookup=True).transform(string)
+    if language == 'hindi':
+        return Transliterator(source='hin', target='eng', build_lookup=True).transform(string)
+    if language == 'punjabi':
+        return Transliterator(source='pan', target='eng', build_lookup=True).transform(string)
+    if language == 'kannada':
+        return Transliterator(source='kan', target='eng', build_lookup=True).transform(string)
+    if language == 'oriya':
+        return Transliterator(source='ori', target='eng', build_lookup=True).transform(string)
 
 def get_relationship_type(relation: str, language: str = 'english') -> str:
     if language == 'english':
