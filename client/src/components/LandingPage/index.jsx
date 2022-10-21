@@ -126,7 +126,7 @@ export function LandingPage() {
             color: 'grey'
           },
           interaction: {
-            dragNodes: false,
+            dragNodes: true,
           },
           layout: {
             hierarchical: {

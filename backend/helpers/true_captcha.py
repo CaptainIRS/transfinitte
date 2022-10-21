@@ -12,8 +12,8 @@ async def solve_captcha():
     cookies = session.cookies.get_dict()
     
     result = requests.post('https://api.apitruecaptcha.org/one/gettext', json={
-        "userid":"indreshp135@gmail.com",
-        "apikey":"Ef1pExkDMkiZDTtpTc5t",
+        "userid":"dangape",
+        "apikey":"7zFPjaJWmimDTnlEcXjM",
         "data":image,
         "case":"mixed",
     }

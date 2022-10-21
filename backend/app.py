@@ -16,7 +16,7 @@ from helpers.true_captcha import solve_captcha
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=[
-    'https://family-tree.captainirs.dev'], allow_methods=['*'], allow_headers=['*'])
+    '*'], allow_methods=['*'], allow_headers=['*'])
 
 app.get('/')
 
@@ -258,9 +258,12 @@ async def get_tree(state,  district, ac, part_no):
         pages = convert_from_bytes(pdf, 500)
         with Pool(cpu_count()//2) as p:
             texts = p.starmap(chop_image,[(pages[i], i + 1, get_language(state)[0]) for i in range(2, len(pages) - 1)])
-        for tuples in texts:
-            for text in tuples:
-                dicts.append(parse_text(text[3], get_language(state)[1]))
+
+        # Array of arrays of tuples to array of tuples
+        texts = [text for texts in texts for text in texts]
+        
+        with Pool(cpu_count()//2) as p:
+            dicts = p.starmap(parse_text,[(text[3], get_language(state)[1]) for text in texts])
 
         with open(f'dumps/{state}_{district}_{ac}_{part_no}.json', 'w') as f:
             json.dump(dicts, f)
@@ -270,4 +273,3 @@ async def get_tree(state,  district, ac, part_no):
     except Exception as e:
         print(e)
         return {'error': 'Invalid'}
-

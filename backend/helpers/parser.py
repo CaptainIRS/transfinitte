@@ -1,24 +1,18 @@
-from typing import List, Dict
+from typing import List
 import csv
 import logging
 from indictrans import Transliterator
 import re
+from googletrans import Translator
 csv_file_path = 'output.csv'
 
 
 def translate_to_eng(string: str, language: str):
     if language == 'english':
         return string
-    if language == 'tamil':
-        return Transliterator(source='tam', target='eng', build_lookup=True).transform(string)
-    if language == 'hindi':
-        return Transliterator(source='hin', target='eng', build_lookup=True).transform(string)
-    if language == 'punjabi':
-        return Transliterator(source='pan', target='eng', build_lookup=True).transform(string)
-    if language == 'kannada':
-        return Transliterator(source='kan', target='eng', build_lookup=True).transform(string)
-    if language == 'oriya':
-        return Transliterator(source='ori', target='eng', build_lookup=True).transform(string)
+    else :
+        translator = Translator()
+        return translator.translate(string, dest='en').text
 
 
 def get_relationship_type(relation: str, language: str = 'english') -> str:
@@ -148,7 +142,7 @@ def extract_name(lines: List[str], language='english'):
     if len(lines) > 1 and ':' not in lines[1]:
         name = name + ' ' + lines[1].strip()
         slice_index = 2
-
+    print(name)
     name = translate_to_eng(name, language)
     print(name)
     name = re.sub('[-]+', '', name).strip()
