@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List
 import csv
 import logging
 from indictrans import Transliterator
@@ -19,7 +19,6 @@ def translate_to_eng(string: str, language: str):
         return Transliterator(source='kan', target='eng', build_lookup=True).transform(string)
     if language == 'oriya':
         return Transliterator(source='ori', target='eng', build_lookup=True).transform(string)
-
 
 def get_relationship_type(relation: str, language: str = 'english') -> str:
     if language == 'english':
@@ -148,7 +147,7 @@ def extract_name(lines: List[str], language='english'):
     if len(lines) > 1 and ':' not in lines[1]:
         name = name + ' ' + lines[1].strip()
         slice_index = 2
-
+    print(name)
     name = translate_to_eng(name, language)
     print(name)
     name = re.sub('[-]+', '', name).strip()

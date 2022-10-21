@@ -1,0 +1,11 @@
+numpy
+opencv-python
+pdf2image
+Pillow
+pytesseract
+requests
+neo4j
+FastAPI[all]
+fuzzywuzzy
+python-Levenshtein
+python-dotenv

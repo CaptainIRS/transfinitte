@@ -8,6 +8,7 @@ import {
   getAssemblyRequest, getDistrictsRequest, getTreeRequest, getTreesRequest
 } from '../../utils/requests';
 import { useLoading } from '../../hooks/useLoading';
+import { showNotification } from '@mantine/notifications';
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -38,7 +39,7 @@ export function LandingPage() {
   const [state, setState] = React.useState(null);
   const { request } = useLoading();
 
-  React.useEffect(async () => {
+  React.useEffect(() => {
     const data = [
       { state_code: 'S06', state_name: 'Gujarat' },
       { state_code: 'S07', state_name: 'Haryana' },
@@ -85,35 +86,115 @@ export function LandingPage() {
   const [date, setDate] = React.useState(new Date());
   const [name, setName] = React.useState('');
   const [fatherName, setFatherName] = React.useState('');
+  const [options, setOptions] = React.useState({});
 
   const [graph, setGraph] = React.useState({});
   const postRequest = async () => {
-    const { data } = await request(() => getTreeRequest({
-      state,
-      district,
-      assembly,
-      gender,
-      dob: date,
-      name,
-      relativesName: fatherName
-    }));
-    setOpened(true);
-    setGraph(data);
+    try{
+      const response = await request(() => getTreeRequest({
+        state,
+        district,
+        assembly,
+        gender,
+        dob: date,
+        name,
+        relativesName: fatherName
+      }));
+      if (response.data.length === 0 || response.data['error']) {
+        showNotification({
+          title: 'No Data',
+          message: 'No data available for this part',
+          color: 'red'
+        });
+      }
+      else{
+        setOpened(true);
+        setGraph(response.data);
+        
+        setOptions({
+          nodes: {
+            borderWidth: 1,
+            color: {
+              border: 'grey'
+            },
+            shape: 'box',
+          },
+          physics: {
+            enabled: true
+          },
+          edges: {
+            color: 'grey'
+          },
+          interaction: {
+            dragNodes: true,
+          },
+          layout: {
+            hierarchical: {
+              direction: "UD", // From up to bottom.
+            },
+          }
+        });
+      }
+    }catch(e){
+      showNotification(
+        {
+          title: 'Error',
+          message: 'No data found',
+          color: 'red',
+          icon: 'exclamation-circle',
+          withIcon: true,
+        }
+      )
+    }
   };
 
   const [part, setPart] = React.useState();
 
   const postRequest2 = async () => {
-    console.log(part, state, district, assembly);
-    const { data } = await request(() => getTreesRequest({
-      state,
-      district,
-      assembly,
-      part
-    }));
-    setOpened(true);
-    console.log(data);
-    setGraph(data);
+    try{
+      const response = await request(() => getTreesRequest({
+        state,
+        district,
+        assembly,
+        part
+      }));
+      if (response.data.length === 0 || response.data['error']) {
+        showNotification({
+          title: 'No Data',
+          message: 'No data available for this part',
+          color: 'red'
+        });
+      }
+      else{
+        setOpened(true);
+        setGraph(response.data);
+        setOptions({
+          nodes: {
+            borderWidth: 1,
+            color: {
+              border: 'grey'
+            },
+            shape: 'box',
+          },
+          physics: {
+            enabled: true
+          },
+          edges: {
+            color: 'grey'
+          }
+        });
+      }
+    }catch(e){
+      showNotification(
+        {
+          title: 'Error',
+          message: 'No data found',
+          color: 'red',
+          icon: 'exclamation-circle',
+          withIcon: true,
+        }
+      )
+    }
   };
 
   return (
@@ -121,29 +202,13 @@ export function LandingPage() {
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
-        title="Tree"
         fullScreen
       >
         <Center>
           <Graph
-            style={{ width: '80vw', height: '80vh' }}
+            style={{ width: '80vw', height: '80vh', border: '1px solid black' }}
             graph={graph}
-            options={{
-              nodes: {
-                borderWidth: 1,
-                color: {
-                  border: 'grey'
-                },
-                shape: 'box'
-              },
-              interaction: { hover: false },
-              physics: {
-                enabled: true
-              },
-              edges: {
-                color: 'grey'
-              }
-            }}
+            options={{...options}}
           />
         </Center>
       </Modal>
@@ -152,7 +217,7 @@ export function LandingPage() {
           <Center>
             <Tabs.List>
               <Tabs.Tab value="first">Individual</Tabs.Tab>
-              <Tabs.Tab value="second">Constituency</Tabs.Tab>
+              <Tabs.Tab value="second">Polling Booth</Tabs.Tab>
             </Tabs.List>
           </Center>
           <Tabs.Panel value="first" p={20}>
@@ -164,6 +229,7 @@ export function LandingPage() {
               classNames={classes}
               value={name}
               onChange={(event) => setName(event.currentTarget.value)}
+              required
             />
 
             <TextInput
@@ -173,6 +239,7 @@ export function LandingPage() {
               classNames={classes}
               value={fatherName}
               onChange={(event) => setFatherName(event.currentTarget.value)}
+              required
             />
 
             <Select
@@ -182,6 +249,7 @@ export function LandingPage() {
               label="Your State"
               classNames={classes}
               onChange={getDistricts}
+              required
             />
 
             <Select
@@ -222,9 +290,10 @@ export function LandingPage() {
               label="Gender"
               classNames={classes}
               onChange={setGender}
+              required
             />
 
-            <NumberInput m={5} label="Age" classNames={classes} value={date} onChange={setDate} />
+            <NumberInput m={5} label="Age" classNames={classes} value={date} onChange={setDate} required />
             <Center m={20}>
               <Button onClick={postRequest}>Search</Button>
             </Center>
@@ -238,6 +307,7 @@ export function LandingPage() {
               label="Select State"
               classNames={classes}
               onChange={getDistricts}
+              required
             />
 
             <Select
@@ -247,6 +317,7 @@ export function LandingPage() {
               label="Select District"
               classNames={classes}
               onChange={getAssemblies}
+              required
             />
 
             <Select
@@ -256,6 +327,7 @@ export function LandingPage() {
               label="Select Assembly"
               classNames={classes}
               onChange={setAssembly}
+              required
             />
 
             <NumberInput
@@ -264,6 +336,7 @@ export function LandingPage() {
               placeholder="Enter Part Number"
               classNames={classes}
               onChange={setPart}
+              required
             />
 
             <Center m={20}>
