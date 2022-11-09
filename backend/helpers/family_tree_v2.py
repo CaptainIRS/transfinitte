@@ -37,8 +37,12 @@ class Person:
 def build_graph(people: list[Person]) -> dict[str, Node]:
     nodes: dict[str, Node] = {}
     for person in people:
-        id = f'{person.name}-{person.house_number}-{person.age}'
+        id = f'{person.name}-{person.house_number}'
         nodes[id] = Node(id, person.name, person.age, person.gender, person.house_number, None, None, None, None, [])
+        relation = f'{person.relation_name}-{person.house_number}'
+        if relation not in nodes:
+            nodes[relation] = Node(relation, person.relation_name, None, None, person.house_number, None, None, None, None, [])
+
 
     # Node in same house
     node_in_same_house = {}
@@ -49,7 +53,7 @@ def build_graph(people: list[Person]) -> dict[str, Node]:
 
     
     for person in people:
-        id = f'{person.name}-{person.house_number}-{person.age}'
+        id = f'{person.name}-{person.house_number}'
         max_similarity = 0
         max_node = None
         for node in nodes:
@@ -58,7 +62,7 @@ def build_graph(people: list[Person]) -> dict[str, Node]:
                     max_similarity = similarity(nodes[node].name, person.relation_name)
                     max_node = node
                     # GET PERSON WITH HIGHEST SIMILARITY
-        if max_node and max_similarity > 84:
+        if max_node and max_similarity > 83:
             node = max_node
             if person.relationship_type in ['father', 'mother']:
                 nodes[id].ancestor = nodes[node]

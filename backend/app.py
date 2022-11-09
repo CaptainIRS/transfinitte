@@ -8,12 +8,13 @@ from helpers.family_tree_v2 import get_family_tree, get_family_trees
 
 from pdf2image import convert_from_bytes
 from helpers.chop import chop_image
-from helpers.parser import parse_text
+from helpers.parser import parse_text, translate_to_eng
 from multiprocessing import Pool, cpu_count
 import os
 
 from helpers.true_captcha import solve_captcha
 from dotenv import load_dotenv
+from indictrans import Transliterator
 
 load_dotenv()
 frontend_url = os.getenv('FRONTEND_URL')
@@ -214,12 +215,14 @@ async def get_tree(name, relative_name, dob, state, gender=None, district=None, 
         print(r.text)
         return {'error': 'Invalid captcha'}
     target = None
-    if len(results) == 1:
+    if len(results) >= 1:
         target = results[0]
         state = target['st_code']
         district = target['dist_no']
         ac = target['ac_no']
         part_no = target['part_no']
+        target['name'] = Transliterator(source='eng', target=get_language(state)[0]).transform(name)
+        target['name'] = Transliterator(source=get_language(state)[0], target='eng').transform(target['name'])
         if os.path.exists(f'dumps/{state}_{district}_{ac}_{part_no}.json'):
             with open(f'dumps/{state}_{district}_{ac}_{part_no}.json', 'r') as f:
                 return get_family_tree(target, json.load(f))

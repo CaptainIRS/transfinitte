@@ -11,12 +11,12 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY requirements.txt ./
-COPY indic-trans/requirements.txt ./indic-trans/
+COPY indic-trans/requirements.txt indic-trans/
 
 RUN pip install -r requirements.txt -r indic-trans/requirements.txt
-COPY indic-trans/dist/indictrans-1.2.3.tar indic-trans/dist/indictrans-1.2.3.tar
+COPY indic-trans/dist/indictrans-1.2.3.tar.gz indic-trans/dist/indictrans-1.2.3.tar.gz
 RUN cd indic-trans && pip install dist/indictrans*.tar.gz && cd ..
 
 COPY . .
 
-CMD uvicorn app:app --host 0.0.0.0 --workers 2 --port 8000
+CMD uvicorn app:app --host 0.0.0.0 --workers 4 --port 8000
